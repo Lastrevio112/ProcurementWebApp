@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, text
 import pandas as pd
 
 from database_conn_func import connect, get_engine
-from ETL_Taxonomy import returnTaxonomy
+from ETL.ETL_Taxonomy import returnTaxonomy
 
 taxonomy = returnTaxonomy()
 
@@ -17,6 +17,9 @@ d_category_df = pd.DataFrame({
     'category_id': range(1, len(unique_categories) + 1),
     'category_desc': unique_categories
 })
+
+#Adding the undefined row
+d_category_df.loc[3] = [4] + ['Undefined']
 
 #Insert into database
 engine = get_engine(connect())

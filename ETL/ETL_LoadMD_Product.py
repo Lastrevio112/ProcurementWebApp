@@ -7,8 +7,8 @@ from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 
 from database_conn_func import connect, get_engine
-from ETL_LoadInitialData import return_df
-from ETL_Taxonomy import returnTaxonomy
+from ETL.ETL_LoadInitialData import return_df
+from ETL.ETL_Taxonomy import returnTaxonomy
 
 #Loading all source data into dataframe
 df = return_df()
@@ -20,8 +20,8 @@ engine = get_engine(connect())
 category_map = returnTaxonomy()
 
 # look up the category_id values from the d_category table once:
-cat_df = pd.read_sql("SELECT category_id, category_name FROM d_category", engine)
-cat_lookup = cat_df.set_index('category_name')['category_id'].to_dict()
+cat_df = pd.read_sql("SELECT category_id, category_desc FROM d_category", engine)
+cat_lookup = cat_df.set_index('category_desc')['category_id'].to_dict()
 
 #List of values in MD_Product_df
 MD_values = list(df.columns)
@@ -37,7 +37,7 @@ MD_Product_df['category_id'] = (
     MD_Product_df['product_desc']
     .map(category_map)                 # map to 'Food', 'Transport', etc.
     .map(cat_lookup)                   # map to the integer key
-    .fillna(cat_lookup['Undefined'])  # optional: default “Ungrouped”
+    .fillna(cat_lookup['Undefined'])  # optional: default “Undefined"
 )
 
 #bulk-insert into database
