@@ -27,6 +27,10 @@ def read_all_sheets_to_df(excel_path: str, include_sheet_name: bool = True) -> p
 
     # Concatenate all DataFrames into one
     combined_df = pd.concat(df_list, ignore_index=True)
+
+    # To fix a bug where INTERNET transactions weren't processed as it was wrongly spelled with a blank space at the end
+    combined_df = combined_df.rename(columns=lambda x: x.strip())
+
     return combined_df
 
 def return_df():
