@@ -25,6 +25,8 @@ cat_lookup = cat_df.set_index('category_desc')['category_id'].to_dict()
 
 #List of values in MD_Product_df
 MD_values = list(df.columns)
+MD_values = [x.strip() for x in MD_values] #This line fixes a bug where INTERNET was wrongly classified as Undefined because of a blank space
+
 columns_to_remove = ['DAY', 'sheet_name']
 for col in columns_to_remove:
     MD_values.remove(col)
