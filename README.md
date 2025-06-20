@@ -19,3 +19,7 @@ The batch file run_etl.bat runs the ETL scripts in a certain order, updating the
 The file ProcurementSpendProject_PowerBIProject.pbix is the PowerBI project where I created all the dashboards.
 
 The index.html loads this PBI project into a Web App.
+
+Here are some screenshots from the final dashboard:
+![image](https://github.com/user-attachments/assets/6500b205-1d6e-41f5-9aba-849490ccf3a8)
+![image](https://github.com/user-attachments/assets/81eb41f9-52ca-4d46-8dfe-1614a885a6f3)
