@@ -24,9 +24,6 @@ df = pd.DataFrame({
 
 # Bulk load via pandas to database
 with engine.begin() as conn:
-    #Truncate existing table:
-    conn.execute(text("DELETE FROM dbo.d_time"))
-
     #Bulk load dates into database:
     df.to_sql(
         'd_time',

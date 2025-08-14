@@ -44,9 +44,6 @@ MD_Product_df['category_id'] = (
 
 #bulk-insert into database
 with engine.begin() as conn:
-    #Truncate first:
-    conn.execute(text("DELETE FROM dbo.md_product"))
-
     MD_Product_df.to_sql(
         "md_product",
         conn,

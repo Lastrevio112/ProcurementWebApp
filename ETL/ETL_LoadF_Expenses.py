@@ -66,8 +66,6 @@ df_final = df_final.iloc[:, [3, 0, 2, 1]] #stole the code from here: https://www
 
 #bulk-insert into database
 with engine.begin() as conn:
-    conn.execute(text("DELETE FROM dbo.f_expenses"))
-
     df_final.to_sql(
         "f_expenses",
         conn,
