@@ -1,12 +1,6 @@
 """THIS SCRIPT CONNECTS TO DATABASE AND LOADS SOURCE DATA INTO A DATA FRAME."""
 
-import os
-import pathlib
 import pandas as pd
-from sqlalchemy import create_engine, text
-from dotenv import load_dotenv
-
-from database_conn_func import connect, get_engine
 
 #Storing the source data path:
 SourceData_PATH = r"D:\EVERYTHING_PROGRAMMING\ProcurementSpendProject\Python_Project\Data\SourceData_Expenses.xlsx"

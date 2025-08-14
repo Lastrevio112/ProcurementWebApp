@@ -6,7 +6,7 @@ import pandas as pd
 from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 
-from database_conn_func import connect, get_engine
+from database_conn_func import get_engine
 from ETL.ETL_LoadInitialData import return_df
 from ETL.ETL_Taxonomy import returnTaxonomy
 
@@ -14,7 +14,7 @@ from ETL.ETL_Taxonomy import returnTaxonomy
 df = return_df()
 
 #Loading the engine for SQL
-engine = get_engine(connect())
+engine = get_engine()
 
 #Loading the TAXONOMY for D_Category
 category_map = returnTaxonomy()
@@ -44,12 +44,13 @@ MD_Product_df['category_id'] = (
 
 #bulk-insert into database
 with engine.begin() as conn:
-    conn.execute(text("TRUNCATE md_product CASCADE"))
+    #Truncate first:
+    conn.execute(text("DELETE FROM md_product"))
 
     MD_Product_df.to_sql(
         "md_product",
         conn,
         if_exists="append",
         index=False,
-        method="multi"
+        chunksize=2000
     )
