@@ -1,27 +1,31 @@
 import os
-import pathlib
-import pandas as pd
-from sqlalchemy import create_engine, text
+import pypyodbc as odbc
 from dotenv import load_dotenv
 
 # ─── 1. CONFIGURATION ─────────────────────────────────────────────────────────
 def connect():
-    load_dotenv()  # reads SUPABASE_* into os.environ
+    load_dotenv()
 
-    DB_USER = os.environ["SUPABASE_USER"]
-    DB_PW   = os.environ["SUPABASE_PW"]
-    DB_HOST = os.environ["SUPABASE_HOST"]
-    DB_PORT = os.environ.get("SUPABASE_PORT", "5432")
-    DB_NAME = os.environ["SUPABASE_DB"]
+    DRIVER_NAME = os.environ["DRIVER_NAME"]
+    SERVER_NAME = os.environ["SERVER_NAME"]
+    DATABASE_NAME = os.environ["DATABASE_NAME"]
+    DATABASE_USERNAME = os.environ["SQLSERVER_USERNAME"]
+    DATABASE_PASSWORD = os.environ["SQLSERVER_PASSWORD"]
 
-    CONN_URL = (
-        f"postgresql+psycopg2://{DB_USER}:{DB_PW}"
-        f"@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-    )
+    connection_string = f"""
+        DRIVER={{{DRIVER_NAME}}};
+        SERVER={SERVER_NAME};
+        DATABASE={DATABASE_NAME};
+        uid={DATABASE_USERNAME};
+        pwd={DATABASE_PASSWORD};
+        TrustServerCertificate=yes;
+    """
 
-    return CONN_URL
+    conn = odbc.connect(connection_string, autocommit=True)
 
-# ─── 2. ENGINE FACTORY ─────────────────────────────────────────────────────────
-def get_engine(CONN_URL, echo: bool = False):
-    """Return a SQLAlchemy engine connected to your Postgres."""
-    return create_engine(CONN_URL, echo=echo)
+    return conn
+
+# ─── 2. CURSOR TO WRITE QUERIES ─────────────────────────────────────────────────────────
+def return_cursor(connection):
+    return connection.cursor()
+
