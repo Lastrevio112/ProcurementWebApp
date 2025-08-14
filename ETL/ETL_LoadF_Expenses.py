@@ -7,7 +7,7 @@ from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 from datetime import datetime
 
-from database_conn_func import connect, get_engine
+from database_conn_func import get_engine
 from ETL.ETL_LoadInitialData import return_df
 from ETL.ETL_Taxonomy import returnTaxonomy
 
@@ -15,7 +15,7 @@ from ETL.ETL_Taxonomy import returnTaxonomy
 df = return_df()
 
 #Loading the engine for SQL
-engine = get_engine(connect())
+engine = get_engine()
 
 #Loading the TAXONOMY for D_Category
 category_map = returnTaxonomy()
@@ -50,7 +50,10 @@ df_joined.drop(columns={"product_desc"}, inplace=True)
 
 #Merging all three date columns into one
 df_withdate = df_joined.copy()
-df_withdate['date_id'] = df_withdate['YEAR'].astype(str) + "-" + df_withdate['MONTH'].astype(str) + "-" + df_withdate['DAY'].astype(str)
+cols = df_withdate[['YEAR','MONTH','DAY']].astype(int).rename(
+    columns={'YEAR':'year','MONTH':'month','DAY':'day'}
+)
+df_withdate['date_id'] = pd.to_datetime(cols).dt.date   # <- python date objects for safe static typing
 #Removing the day, month and year columns as they will not exist in the final table in SQL
 df_withdate.drop(columns={'DAY', 'MONTH', 'YEAR'}, inplace=True)
 
@@ -63,12 +66,12 @@ df_final = df_final.iloc[:, [3, 0, 2, 1]] #stole the code from here: https://www
 
 #bulk-insert into database
 with engine.begin() as conn:
-    conn.execute(text("TRUNCATE f_expenses CASCADE"))
+    conn.execute(text("DELETE FROM dbo.f_expenses"))
 
     df_final.to_sql(
         "f_expenses",
         conn,
         if_exists="append",
         index=False,
-        method="multi"
+        chunksize=2000
     )

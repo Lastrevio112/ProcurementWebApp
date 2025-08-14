@@ -25,7 +25,7 @@ d_category_df.loc[len(d_category_df)] = [new_row_id, "Undefined"]
 #Insert into database
 engine = get_engine()
 with engine.begin() as conn:
-    conn.execute(text("DELETE FROM d_category"))  #truncate first, but can't actually use the truncate command because of foreign key constraints
+    conn.execute(text("DELETE FROM dbo.d_category"))  #truncate first, but can't actually use the truncate command because of foreign key constraints
     d_category_df.to_sql(
         "d_category",
         conn,
