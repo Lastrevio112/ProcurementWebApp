@@ -1,9 +1,11 @@
 import os
-import pypyodbc as odbc
 from dotenv import load_dotenv
+from sqlalchemy import create_engine
+from sqlalchemy import text
+import urllib
 
 # ─── 1. CONFIGURATION ─────────────────────────────────────────────────────────
-def connect():
+def get_engine():
     load_dotenv()
 
     DRIVER_NAME = os.environ["DRIVER_NAME"]
@@ -12,20 +14,21 @@ def connect():
     DATABASE_USERNAME = os.environ["SQLSERVER_USERNAME"]
     DATABASE_PASSWORD = os.environ["SQLSERVER_PASSWORD"]
 
-    connection_string = f"""
+    params = urllib.parse.quote_plus(f"""
         DRIVER={{{DRIVER_NAME}}};
         SERVER={SERVER_NAME};
         DATABASE={DATABASE_NAME};
-        uid={DATABASE_USERNAME};
-        pwd={DATABASE_PASSWORD};
+        UID={DATABASE_USERNAME};
+        PWD={DATABASE_PASSWORD};
+        Encrypt=yes;
         TrustServerCertificate=yes;
-    """
+        """
+    )
 
-    conn = odbc.connect(connection_string, autocommit=True)
+    engine = create_engine(
+        f"mssql+pyodbc:///?odbc_connect={params}",
+        fast_executemany=True,
+        pool_pre_ping=True,
+    )
 
-    return conn
-
-# ─── 2. CURSOR TO WRITE QUERIES ─────────────────────────────────────────────────────────
-def return_cursor(connection):
-    return connection.cursor()
-
+    return engine
