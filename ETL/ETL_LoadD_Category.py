@@ -3,7 +3,7 @@
 from sqlalchemy import create_engine, text
 import pandas as pd
 
-from database_conn_func import connect, get_engine
+from database_conn_func import get_engine
 from ETL.ETL_Taxonomy import returnTaxonomy
 
 taxonomy = returnTaxonomy()
@@ -19,12 +19,13 @@ d_category_df = pd.DataFrame({
 })
 
 #Adding the undefined row
-d_category_df.loc[3] = [4] + ['Undefined']
+new_row_id = d_category_df["category_id"].max() + 1
+d_category_df.loc[len(d_category_df)] = [new_row_id, "Undefined"]
 
 #Insert into database
-engine = get_engine(connect())
+engine = get_engine()
 with engine.begin() as conn:
-    conn.execute(text("TRUNCATE d_category CASCADE"))
+    conn.execute(text("DELETE FROM d_category"))  #truncate first, but can't actually use the truncate command because of foreign key constraints
     d_category_df.to_sql(
         "d_category",
         conn,

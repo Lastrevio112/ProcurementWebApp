@@ -5,8 +5,8 @@ from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 import os
 
-from database_conn_func import connect, get_engine
-engine = get_engine(connect())
+from database_conn_func import get_engine
+engine = get_engine()
 
 #set start date and end date for D_Time table
 start_date = "2020-01-01"
@@ -22,16 +22,16 @@ df = pd.DataFrame({
     'day': dates.day
 })
 
-# Truncate the existing table
-with engine.begin() as conn:
-    conn.execute(text("TRUNCATE TABLE d_time CASCADE"))
-
 # Bulk load via pandas to database
 with engine.begin() as conn:
+    #Truncate existing table:
+    conn.execute(text("DELETE FROM d_time"))
+
+    #Bulk load dates into database:
     df.to_sql(
         'd_time',
         conn,
         if_exists='append',  # table must exist already with proper schema
         index=False,
-        method='multi'
+        chunksize=2000
     )
