@@ -4,7 +4,7 @@ The first dashboard is an expense overview with line charts, bar charts and KPIs
 The source data can be found in the 'Data' folder. It is an Excel file where I record every single thing I buy. 
 The Excel contains multiple sheets, each sheet representing a month-year combination. The first column of the sheet contains the day of the month (from 1 to 31) while the other columns represent products I buy.
 
-A PosgreSQL database was created in supabase and tables were created there in a snowflake schema:
+A PosgreSQL database was created in supabase initially, but the code was later refactored to connect to a local SQL Server database. The tables were created there in a snowflake schema:
 1. F_Expenses is the main fact table containing each transaction.
 2. MD_Product is a dimension table referncing the fact table which contains each possible product I buy (the columns in the source data).
 3. D_Category is a sub-dimension table that references MD_Product that classifies my expenses into four categories: food, transport, utilities and undefined.
